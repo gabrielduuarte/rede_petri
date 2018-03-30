@@ -2,23 +2,24 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define MAX 15
+#define MAX 256
 #define GAME 1
 
 int * token(int nlug);
 void arc_consumidores(int nacon, int a_con[MAX][MAX]);
 void arc_produtor(int napro, int a_pro[MAX][MAX]);
+void rede_p(int nlug, int *tok, int ntran, int nacon, int a_con, int napro, int a_pro);
 
 int main(void)
 {
-    int i;
-    int nlug,            /* Numero de lugares */
-        *tok,            /* Tokens */
-        ntran,           /* Numero de transicoes */
-        nacon,            /* Numero de arcos consumidores (lugar para transicao) */
-        a_con[MAX][MAX], /* Arcos consumidores */
-        napro,            /* Quantidade de arcos produtores (transicao para lugar) */
-        a_pro[MAX][MAX]; /* Matriz do arco produtor */
+    int i;                  
+    int nlug,               /* Numero de lugares */
+        *tok,               /* Tokens */
+        ntran,              /* Numero de transicoes */
+        nacon,              /* Numero de arcos consumidores (lugar para transicao) */
+        a_con[MAX][MAX],    /* Arcos consumidores */
+        napro,              /* Quantidade de arcos produtores (transicao para lugar) */
+        a_pro[MAX][MAX];    /* Arcos produtores */
 
     
     /*Recebe os lugares*/
@@ -46,7 +47,7 @@ int main(void)
     /* Passa numero de arcos produtores e a matriz para preenche */
     arc_produtor(napro, a_pro);
 
-    /*rede_p(nlug, tok, a_con, a_pro);*/
+    rede_p(nlug, tok, ntran, nacon, a_con, napro, a_pro)
 
 
     return 0;
@@ -88,4 +89,17 @@ void arc_produtor(int napro, int a_pro[MAX][MAX])
     }
     return;
 }
+
+void rede_p(int nlug, int *tok, int ntran, int nacon, int a_con, int napro, int a_pro)
+{
+    int i;
+    
+    
+
+
+
+
+
+
+
 
