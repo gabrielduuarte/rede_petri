@@ -1,14 +1,17 @@
 
 #include<stdio.h>
 #include<stdlib.h>
+#include<time.h>
 
 #define MAX 256
 #define GAME 1
+#define VOLTA -1
 
 int * token(int nlug);
 void arc_consumidores(int nacon, int a_con[MAX][MAX]);
 void arc_produtor(int napro, int a_pro[MAX][MAX]);
-void rede_p(int nlug, int *tok, int ntran, int nacon, int a_con, int napro, int a_pro);
+void simulador(int nlug, int *tok, int ntran, int nacon, int a_con[MAX][MAX], int napro, int a_pro[MAX][MAX]);
+void sorteia_trans(int tran[], int ntran);
 
 int main(void)
 {
@@ -47,7 +50,7 @@ int main(void)
     /* Passa numero de arcos produtores e a matriz para preenche */
     arc_produtor(napro, a_pro);
 
-    rede_p(nlug, tok, ntran, nacon, a_con, napro, a_pro)
+    simulador(nlug, tok, ntran, nacon, a_con, napro, a_pro);
 
 
     return 0;
@@ -90,16 +93,34 @@ void arc_produtor(int napro, int a_pro[MAX][MAX])
     return;
 }
 
-void rede_p(int nlug, int *tok, int ntran, int nacon, int a_con, int napro, int a_pro)
+void simulador(int nlug, int *tok, int ntran, int nacon, int a_con[MAX][MAX], int napro, int a_pro[MAX][MAX])
 {
     int i;
+    int tran[ntran];
     
+    printf("Transicoes sorteadas\n");
+    sorteia_trans(tran, ntran);
+    for(i=0; i<ntran; i++)
+        printf("%d ", tran[i]);
+
+    printf("\n");
+}
     
+void sorteia_trans(int tran[], int ntran)
+{
+    int i, j;
+    srand(time(NULL));
 
+    for(i=0; i<ntran; i++)
+    {
+        tran[i]=rand()%ntran;
+        for(j=0; j<i; j++)
+            if(tran[i]==tran[j])
+            {
+                tran[i]=rand()%ntran;
+                j=VOLTA;
+            }
+    }
 
-
-
-
-
-
+}
 
