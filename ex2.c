@@ -12,6 +12,7 @@ void arc_consumidores(int nacon, int a_con[MAX][MAX]);
 void arc_produtor(int napro, int a_pro[MAX][MAX]);
 void simulador(int nlug, int *tok, int ntran, int nacon, int a_con[MAX][MAX], int napro, int a_pro[MAX][MAX]);
 void sorteia_trans(int tran[], int ntran);
+void ativa_tran(int tran[], int ntran, int nlug, int *tok, int a_con[MAX][MAX]);
 
 int main(void)
 {
@@ -24,6 +25,7 @@ int main(void)
         napro,              /* Quantidade de arcos produtores (transicao para lugar) */
         a_pro[MAX][MAX];    /* Arcos produtores */
 
+    srand(time(NULL));
     
     /*Recebe os lugares*/
     scanf("%d", &nlug);
@@ -32,7 +34,7 @@ int main(void)
     /*Recebe os tokens*/
     tok=token(nlug);
     for(i=0; i<nlug; i++)    /*Recebe os tokens dependendo da quantidade de lugares */
-        printf("Tokens em respectivos lugares: tok[%d]: %d\n", i, tok[i]);
+        printf("Tokens no lugar %d: %d\n", i, tok[i]);
 
     /*Recebe a quantidade de transicoes*/
     scanf("%d", &ntran);
@@ -51,7 +53,6 @@ int main(void)
     arc_produtor(napro, a_pro);
 
     simulador(nlug, tok, ntran, nacon, a_con, napro, a_pro);
-
 
     return 0;
 }
@@ -74,7 +75,7 @@ void arc_consumidores(int nacon, int a_con[MAX][MAX])
     {
         scanf("%d %d %d", &lug, &tran, &rot);
         a_con[lug][tran]=rot;
-        printf("Arco consumidor: A_con[%d][%d]: %d\n", lug, tran, a_con[lug][tran]);
+        printf("Arco consumidor: Do lugar %d para a transicao %d com peso %d\n", lug, tran, a_con[lug][tran]);
     }
     
     return;
@@ -88,39 +89,87 @@ void arc_produtor(int napro, int a_pro[MAX][MAX])
     {
         scanf("%d %d %d", &tran, &lug, &rot);
         a_pro[tran][lug]=rot;
-        printf("Arco produtor: A_pro[%d][%d]: %d\n", tran, lug, a_pro[tran][lug]);
+        printf("Arco produtor: Da transicao %d para o lugar %d com peso %d\n", tran, lug, a_pro[tran][lug]);
     }
     return;
 }
 
 void simulador(int nlug, int *tok, int ntran, int nacon, int a_con[MAX][MAX], int napro, int a_pro[MAX][MAX])
 {
-    int i;
+    int i, lugar, count=0, j;
     int tran[ntran];
-    
+
+    /*for(i=0; i<ntran; i++)
+        for(j=0; j<nlug; j++)
+            printf("Arco consumidor: a_con[%d][%d]:%d\n",i,j,a_con[i][j]);*/
+  
     printf("Transicoes sorteadas\n");
     sorteia_trans(tran, ntran);
     for(i=0; i<ntran; i++)
         printf("%d ", tran[i]);
-
     printf("\n");
+    
+    ativa_tran(tran, ntran, nlug, tok, a_con);
+
+    /*for(i=0; i<ntran; i++)
+    {
+        for(lugar=0; lugar<nlug; lugar++)
+        {
+            if(a_con[lugar][tran[i]]!=0)
+            {
+                if(a_con[lugar][tran[i]]<=tok[lugar])
+                {
+                    printf("O arco consumidor do lugar:%d para a transicao %d ativou a transicao\n", lugar, tran[i]);
+                    tok[lugar]--;
+                }
+                else
+                    printf("O arco consumidor do lugar %d para a transicao %d nao ativou\n", lugar, tran[i]);
+            }
+        }
+    }*/
+
+    /*for(i=0;i<nlug;i++)
+        printf("Tokens no lugar %d: %d\n", i, tok[i]);*/
 }
     
 void sorteia_trans(int tran[], int ntran)
 {
     int i, j;
-    srand(time(NULL));
 
     for(i=0; i<ntran; i++)
     {
         tran[i]=rand()%ntran;
         for(j=0; j<i; j++)
+        {
             if(tran[i]==tran[j])
             {
                 tran[i]=rand()%ntran;
                 j=VOLTA;
             }
+        }
     }
 
+}
+
+void ativa_tran(int tran[], int ntran, int nlug, int *tok, int a_con[MAX][MAX])
+{
+    int i, lugar;
+        
+    for(i=0; i<ntran; i++)
+    {
+        for(lugar=0; lugar<nlug; lugar++)
+        {
+            if(a_con[lugar][tran[i]]!=0)
+            {
+                if(a_con[lugar][tran[i]]<=tok[lugar])
+                {
+                    printf("O arco consumidor do lugar:%d para a transicao %d ativou a transicao\n", lugar, tran[i]);
+                    tok[lugar]--;
+                }
+                else
+                    printf("O arco consumidor do lugar %d para a transicao %d nao ativou\n", lugar, tran[i]);
+            }
+        }
+    }
 }
 
