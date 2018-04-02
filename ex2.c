@@ -111,25 +111,8 @@ void simulador(int nlug, int *tok, int ntran, int nacon, int a_con[MAX][MAX], in
     
     ativa_tran(tran, ntran, nlug, tok, a_con, a_pro);
 
-    /*for(i=0; i<ntran; i++)
-    {
-        for(lugar=0; lugar<nlug; lugar++)
-        {
-            if(a_con[lugar][tran[i]]!=0)
-            {
-                if(a_con[lugar][tran[i]]<=tok[lugar])
-                {
-                    printf("O arco consumidor do lugar:%d para a transicao %d ativou a transicao\n", lugar, tran[i]);
-                    tok[lugar]--;
-                }
-                else
-                    printf("O arco consumidor do lugar %d para a transicao %d nao ativou\n", lugar, tran[i]);
-            }
-        }
-    }*/
-
-    /*for(i=0;i<nlug;i++)
-        printf("Tokens no lugar %d: %d\n", i, tok[i]);*/
+    for(i=0;i<nlug;i++)
+        printf("Tokens no lugar %d: %d\n", i, tok[i]);
 }
     
 void sorteia_trans(int tran[], int ntran)
@@ -165,12 +148,14 @@ void ativa_tran(int tran[], int ntran, int nlug, int *tok, int a_con[MAX][MAX], 
                 {
                     printf("O arco consumidor do lugar:%d para a transicao %d ativou a transicao\n", lugar, tran[i]);
                     tok[lugar]--;
+                    printf("Tokens no lugar %d: %d\n", lugar, tok[lugar]);
                     for(novolugar=0; novolugar<nlug; novolugar++)
                     {
                         if(a_pro[tran[i]][novolugar]!=0)
                         {
-                            printf("Produziu token da tran:%d para o lugar:%d\n", tran[i], novolugar);
+                            printf("Produziu %d token da tran:%d para o lugar:%d\n", a_pro[tran[i]][novolugar], tran[i], novolugar);
                             tok[novolugar]+=a_pro[tran[i]][novolugar];
+                            printf("Tokens no lugar %d: %d\n", novolugar, tok[novolugar]);
                         }
                     }
                 }
@@ -179,9 +164,6 @@ void ativa_tran(int tran[], int ntran, int nlug, int *tok, int a_con[MAX][MAX], 
             }
         }
     }
-    
-    for(i=0;i<nlug;i++)
-        printf("Tokens no lugar %d: %d\n", i, tok[i]);
-
 }
+
 
