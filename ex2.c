@@ -147,7 +147,7 @@ void ativa_tran(int tran[], int ntran, int nlug, int *tok, int a_con[MAX][MAX], 
                 if(a_con[lugar][tran[i]]<=tok[lugar])
                 {
                     printf("O arco consumidor do lugar:%d para a transicao %d ativou a transicao\n", lugar, tran[i]);
-                    tok[lugar]--;
+                    tok[lugar]-=a_con[lugar][tran[i]];
                     printf("Tokens no lugar %d: %d\n", lugar, tok[lugar]);
                     for(novolugar=0; novolugar<nlug; novolugar++)
                     {
