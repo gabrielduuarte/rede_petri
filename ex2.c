@@ -154,7 +154,7 @@ int ativa_tran(int a_con[MAX][MAX], int a_pro[MAX][MAX], int tran, int nlug, int
     
     for(i=0; i<nlug; i++)
     {
-        if(lugar[i]==i)/*Diz quais sao os lugares que apontam para a mesma tran*/
+        if(lugar[i]==i && a_con[i][tran]!=0)/*Diz quais sao os lugares que apontam para a mesma tran*/
         {
             if(a_con[lugar[i]][tran]<=tok[lugar[i]])/*verifica se ativa a transicao*/
             {
