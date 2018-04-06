@@ -10,9 +10,11 @@
 int * token(int nlug);
 void arc_consumidores(int nacon, int a_con[MAX][MAX]);
 void arc_produtor(int napro, int a_pro[MAX][MAX]);
-void simulador(int nlug, int *tok, int ntran, int nacon, int a_con[MAX][MAX], int napro, int a_pro[MAX][MAX]);
+void simulador(int nlug, int *tok, int ntran, int a_con[MAX][MAX], int a_pro[MAX][MAX]);
 void sorteia_trans(int tran[], int ntran);
-void ativa_tran(int tran[], int ntran, int nlug, int *tok, int a_con[MAX][MAX], int a_pro[MAX][MAX]);
+int ativa_tran(int a_con[MAX][MAX], int a_pro[MAX][MAX], int tran, int nlug, int *tok);
+void produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok);
+/*int final(int a_con[MAX][MAX], int a_pro[MAX][MAX], int lugar[MAX], int tran, int nlug, int *tok);*/
 
 int main(void)
 {
@@ -52,7 +54,7 @@ int main(void)
     /* Passa numero de arcos produtores e a matriz para preenche */
     arc_produtor(napro, a_pro);
 
-    simulador(nlug, tok, ntran, nacon, a_con, napro, a_pro);
+    simulador(nlug, tok, ntran, a_con, a_pro);
 
     return 0;
 }
@@ -94,26 +96,32 @@ void arc_produtor(int napro, int a_pro[MAX][MAX])
     return;
 }
 
-void simulador(int nlug, int *tok, int ntran, int nacon, int a_con[MAX][MAX], int napro, int a_pro[MAX][MAX])
+void simulador(int nlug, int *tok, int ntran, int a_con[MAX][MAX], int a_pro[MAX][MAX])
 {
-    int i, lugar, count=0, j;
+    int i, count=0;
     int tran[ntran];
 
-    /*for(i=0; i<ntran; i++)
-        for(j=0; j<nlug; j++)
-            printf("Arco consumidor: a_con[%d][%d]:%d\n",i,j,a_con[i][j]);*/
-  
-    printf("Transicoes sorteadas\n");
-    sorteia_trans(tran, ntran);
-    for(i=0; i<ntran; i++)
-        printf("%d ", tran[i]);
-    printf("\n");
-    
-    ativa_tran(tran, ntran, nlug, tok, a_con, a_pro);
+    while(count < 5)
+    { 
+        printf("Transicoes sorteadas\n");
+        sorteia_trans(tran, ntran);
+        for(i=0; i<ntran; i++)
+            printf("%d ", tran[i]);
+        printf("\n");
+
+        for(i=0; i<ntran; i++)
+        {
+            if(ativa_tran(a_con, a_pro, tran[i], nlug, tok))
+                break;
+        }
+        count++;
+        /*lembrar que acaba o prog quando nenhuma transicao estiver habilitada */
+    }
 
     for(i=0;i<nlug;i++)
         printf("Tokens no lugar %d: %d\n", i, tok[i]);
 }
+
     
 void sorteia_trans(int tran[], int ntran)
 {
@@ -134,36 +142,61 @@ void sorteia_trans(int tran[], int ntran)
 
 }
 
-void ativa_tran(int tran[], int ntran, int nlug, int *tok, int a_con[MAX][MAX], int a_pro[MAX][MAX])
+int ativa_tran(int a_con[MAX][MAX], int a_pro[MAX][MAX], int tran, int nlug, int *tok)
 {
-    int i, lugar, novolugar, j;
-    
-    for(i=0; i<ntran; i++)
+    int i, lugar[MAX]={}, savelugar[MAX];
+
+    for(i=0; i<nlug; i++)
     {
-        for(lugar=0; lugar<nlug; lugar++)
+        if(a_con[i][tran]!=0) /*verificar quais lugares apontam para a mesma transicao*/
+            lugar[i]=i;
+    }
+    
+    for(i=0; i<nlug; i++)
+    {
+        if(lugar[i]==i)/*Diz quais sao os lugares que apontam para a mesma tran*/
         {
-            if(a_con[lugar][tran[i]]!=0)
+            if(a_con[lugar[i]][tran]<=tok[lugar[i]])/*verifica se ativa a transicao*/
             {
-                if(a_con[lugar][tran[i]]<=tok[lugar])
-                {
-                    printf("O arco consumidor do lugar:%d para a transicao %d ativou a transicao\n", lugar, tran[i]);
-                    tok[lugar]-=a_con[lugar][tran[i]];
-                    printf("Tokens no lugar %d: %d\n", lugar, tok[lugar]);
-                    for(novolugar=0; novolugar<nlug; novolugar++)
-                    {
-                        if(a_pro[tran[i]][novolugar]!=0)
-                        {
-                            printf("Produziu %d token da tran:%d para o lugar:%d\n", a_pro[tran[i]][novolugar], tran[i], novolugar);
-                            tok[novolugar]+=a_pro[tran[i]][novolugar];
-                            printf("Tokens no lugar %d: %d\n", novolugar, tok[novolugar]);
-                        }
-                    }
-                }
-                else
-                    printf("O arco consumidor do lugar %d para a transicao %d nao ativou\n", lugar, tran[i]);
+                printf("Lugar %d para a transicao %d ativada\n", i, tran);
+                savelugar[i]=i; /* salva os lugares que apontam para a transicao a ser ativada */
             }
+            else
+            {
+                printf("Lugar %d para a tansicao %d nao ativada\n", i, tran);
+                return 0;
+            }
+        }
+    }
+    for(i=0; i<nlug; i++)
+        if(savelugar[i]==i)
+            tok[i]-=a_con[i][tran]; /* Consome os tokens dos lugares que apontam para a transicao ativada*/
+
+    produz_token(a_pro, tran, nlug, tok); /* Produz os tokens para os lugares que a transicao aponta */ 
+
+
+    return 1;
+}
+
+void produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok)
+{
+    int i;
+
+    for(i=0; i<nlug; i++)
+    {
+        if(a_pro[tran][i]!=0)
+        {
+            printf("Produziu %d token da tran:%d para o lugar:%d\n", a_pro[tran][i], tran, i);
+            tok[i]+=a_pro[tran][i];
+            printf("Tokens no lugar %d: %d\n", i, tok[i]);
         }
     }
 }
 
+
+
+
+
+
+    
 
