@@ -54,7 +54,8 @@ int main(void)
     arc_produtor(napro, a_pro);
 
     simulador(nlug, tok, ntran, a_con, a_pro);
-    
+
+    printf("\n");
     for(i=0;i<nlug;i++)
         printf("Tokens no lugar %d: %d\n", i, tok[i]);
 
@@ -197,11 +198,4 @@ int produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok)
     }
     return 1;
 }
-
-
-
-
-
-
-    
 
