@@ -4,7 +4,7 @@
 #include<time.h>
 
 #define MAX 256
-#define GAME 1
+#define GAME 100
 #define VOLTA -1
 
 int * token(int nlug);
@@ -13,8 +13,7 @@ void arc_produtor(int napro, int a_pro[MAX][MAX]);
 void simulador(int nlug, int *tok, int ntran, int a_con[MAX][MAX], int a_pro[MAX][MAX]);
 void sorteia_trans(int tran[], int ntran);
 int ativa_tran(int a_con[MAX][MAX], int a_pro[MAX][MAX], int tran, int nlug, int *tok);
-void produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok);
-/*int final(int a_con[MAX][MAX], int a_pro[MAX][MAX], int lugar[MAX], int tran, int nlug, int *tok);*/
+int produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok);
 
 int main(void)
 {
@@ -55,6 +54,9 @@ int main(void)
     arc_produtor(napro, a_pro);
 
     simulador(nlug, tok, ntran, a_con, a_pro);
+    
+    for(i=0;i<nlug;i++)
+        printf("Tokens no lugar %d: %d\n", i, tok[i]);
 
     return 0;
 }
@@ -101,7 +103,7 @@ void simulador(int nlug, int *tok, int ntran, int a_con[MAX][MAX], int a_pro[MAX
     int i, count=0;
     int tran[ntran];
 
-    while(count < 5)
+    while(count<GAME)
     { 
         printf("Transicoes sorteadas\n");
         sorteia_trans(tran, ntran);
@@ -113,13 +115,13 @@ void simulador(int nlug, int *tok, int ntran, int a_con[MAX][MAX], int a_pro[MAX
         {
             if(ativa_tran(a_con, a_pro, tran[i], nlug, tok))
                 break;
+            if(i==ntran-1)
+                return;
         }
         count++;
-        /*lembrar que acaba o prog quando nenhuma transicao estiver habilitada */
+        /*lembrar que acaba o prog quando nenhuma transicao estiver habilitada ou 100 rodadas*/
     }
 
-    for(i=0;i<nlug;i++)
-        printf("Tokens no lugar %d: %d\n", i, tok[i]);
 }
 
     
@@ -145,6 +147,7 @@ void sorteia_trans(int tran[], int ntran)
 int ativa_tran(int a_con[MAX][MAX], int a_pro[MAX][MAX], int tran, int nlug, int *tok)
 {
     int i, lugar[MAX]={}, savelugar[MAX];
+
 
     for(i=0; i<nlug; i++)
     {
@@ -173,12 +176,13 @@ int ativa_tran(int a_con[MAX][MAX], int a_pro[MAX][MAX], int tran, int nlug, int
             tok[i]-=a_con[i][tran]; /* Consome os tokens dos lugares que apontam para a transicao ativada*/
 
     produz_token(a_pro, tran, nlug, tok); /* Produz os tokens para os lugares que a transicao aponta */ 
+       
 
 
     return 1;
 }
 
-void produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok)
+int produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok)
 {
     int i;
 
@@ -191,6 +195,7 @@ void produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok)
             printf("Tokens no lugar %d: %d\n", i, tok[i]);
         }
     }
+    return 1;
 }
 
 
