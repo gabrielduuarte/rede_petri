@@ -1,3 +1,31 @@
+/* ************************************************************************ *
+ *    ex2.c, v1.0                                                           *
+ *    Rede de petri                                                         *
+ *                                                                          *
+ *    Copyright (C) 2017 by Gabriel De Andrade Duarte                       *
+ *                                                                          *
+ *    This program is free software; you can redistribute it and/or modify  *
+ *    it under the terms of the GNU General Public License as published by  *
+ *    the Free Software Foundation; either version 2 of the License, or     *
+ *    (at your option) any later version.                                   *
+ *                                                                          *
+ *    This program is distributed in the hope that it will be useful,       *
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *    GNU General Public License for more details.                          *
+ *                                                                          *
+ *    You should have received a copy of the GNU General Public License     *
+ *    along with this program; if not, write to the                         *
+ *    Free Software Foundation, Inc.,                                       *
+ *    59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *                                                                          *
+ *    To contact the author, please write to:                               *
+ *    Gabriel De Andrade Duarte <duarte0904@gmail.com                       *
+ *    Webpage: http://github.com/gabrielduuarte                             *
+ *    Phone: +55 (81) 99855-6315                                            *
+ * ************************************************************************ *
+ * 
+ */
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -14,6 +42,7 @@ void simulador(int nlug, int *tok, int ntran, int a_con[MAX][MAX], int a_pro[MAX
 void sorteia_trans(int tran[], int ntran);
 int ativa_tran(int a_con[MAX][MAX], int a_pro[MAX][MAX], int tran, int nlug, int *tok);
 int produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok);
+void perguntas(int know, int knowTran[], int tran[], int ntran);
 
 int main(void)
 {
@@ -101,9 +130,9 @@ void arc_produtor(int napro, int a_pro[MAX][MAX])
 
 void simulador(int nlug, int *tok, int ntran, int a_con[MAX][MAX], int a_pro[MAX][MAX])
 {
-    int i, count=0;
-    int tran[ntran];
-
+    int i, count=0, tran[ntran];
+    int know=0, knowTran[MAX]={};
+    
     while(count<GAME)
     { 
         printf("Transicoes sorteadas\n");
@@ -115,16 +144,25 @@ void simulador(int nlug, int *tok, int ntran, int a_con[MAX][MAX], int a_pro[MAX
         for(i=0; i<ntran; i++)
         {
             if(ativa_tran(a_con, a_pro, tran[i], nlug, tok))
+            {
+                know++;
+                knowTran[tran[i]]++;
                 break;
+            }
             if(i==ntran-1)/*Se nao ativar ate a ultima transicao, acaba o simulador*/
+            {
+                perguntas(know, knowTran, tran, ntran);
                 return;
+            }
         }
+        if(count==99)
+            perguntas(know, knowTran, tran, ntran);
+
         count++;
         /*lembrar que acaba o prog quando nenhuma transicao estiver habilitada ou 100 rodadas*/
     }
 
 }
-
     
 void sorteia_trans(int tran[], int ntran)
 {
@@ -173,12 +211,12 @@ int ativa_tran(int a_con[MAX][MAX], int a_pro[MAX][MAX], int tran, int nlug, int
         }
     }
     for(i=0; i<nlug; i++)
+    {
         if(savelugar[i]==i) /*Se todos os lugares salvos apontarem para a mesma transicao*/
             tok[i]-=a_con[i][tran]; /* Consome os tokens dos lugares que apontam para a transicao ativada*/
+    }
 
     produz_token(a_pro, tran, nlug, tok); /* Produz os tokens para os lugares que a transicao aponta */ 
-       
-
 
     return 1;
 }
@@ -199,3 +237,12 @@ int produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok)
     return 1;
 }
 
+void perguntas(int know, int knowTran[], int tran[], int ntran)
+{
+    int i;
+
+    printf("\nQuantas vezes as trasicoes dispararam: %d\n", know);
+    for(i=0; i<ntran; i++)
+        printf("Quantas vezes a transicao %d disparou: %d ||| Proporcao: %.2f%%\n", tran[i],  knowTran[i], ((float)knowTran[i]/(float)know)*100);
+
+}
