@@ -116,7 +116,7 @@ void simulador(int nlug, int *tok, int ntran, int a_con[MAX][MAX], int a_pro[MAX
         {
             if(ativa_tran(a_con, a_pro, tran[i], nlug, tok))
                 break;
-            if(i==ntran-1)
+            if(i==ntran-1)/*Se nao ativar ate a ultima transicao, acaba o simulador*/
                 return;
         }
         count++;
@@ -168,12 +168,12 @@ int ativa_tran(int a_con[MAX][MAX], int a_pro[MAX][MAX], int tran, int nlug, int
             else
             {
                 printf("Lugar %d para a tansicao %d nao ativada\n", i, tran);
-                return 0;
+                return 0;/*Nao ativou a transicao*/
             }
         }
     }
     for(i=0; i<nlug; i++)
-        if(savelugar[i]==i)
+        if(savelugar[i]==i) /*Se todos os lugares salvos apontarem para a mesma transicao*/
             tok[i]-=a_con[i][tran]; /* Consome os tokens dos lugares que apontam para a transicao ativada*/
 
     produz_token(a_pro, tran, nlug, tok); /* Produz os tokens para os lugares que a transicao aponta */ 
@@ -192,7 +192,7 @@ int produz_token(int a_pro[MAX][MAX], int tran, int nlug, int *tok)
         if(a_pro[tran][i]!=0)
         {
             printf("Produziu %d token da tran:%d para o lugar:%d\n", a_pro[tran][i], tran, i);
-            tok[i]+=a_pro[tran][i];
+            tok[i]+=a_pro[tran][i]; /* Adiciona os tokens produzidos ao lugar que aponta o arco produtor*/
             printf("Tokens no lugar %d: %d\n", i, tok[i]);
         }
     }
